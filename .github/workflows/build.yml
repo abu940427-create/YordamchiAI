@@ -1,0 +1,36 @@
+name: APK yasash
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kodni olish
+        uses: actions/checkout@v4
+
+      - name: Zip faylni ochish
+        run: unzip -o YordamchiAI.zip -d .
+
+      - name: Java o'rnatish
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Gradle wrapper yaratish
+        working-directory: YordamchiAI
+        run: gradle wrapper --gradle-version 8.7
+
+      - name: APK yasash
+        working-directory: YordamchiAI
+        run: chmod +x ./gradlew && ./gradlew assembleDebug --stacktrace
+
+      - name: APK faylini saqlash
+        uses: actions/upload-artifact@v4
+        with:
+          name: YordamchiAI-debug-apk
+          path: YordamchiAI/app/build/outputs
